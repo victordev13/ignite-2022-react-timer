@@ -33,4 +33,10 @@ export const HeaderContainer = styled.header`
       }
     }
   }
+
+  span {
+    font-weight: bold;
+    font-family: 'Roboto Mono', monospace;
+    letter-spacing: 2px;
+  }
 `
