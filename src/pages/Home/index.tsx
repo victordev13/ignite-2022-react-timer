@@ -31,6 +31,7 @@ interface Cycle {
   minutesAmount: number
   startDate: Date
   interruptedDate?: Date
+  finishedDate?: Date
 }
 
 export default function Home() {
@@ -76,12 +77,31 @@ export default function Home() {
 
   const activeCycle = cycles.find(({ id }) => activeCycleId === id)
 
+  const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0
+
   useEffect(() => {
     let interval: number
+
     if (activeCycle) {
       interval = setInterval(() => {
-        setAmountSecondsPassed(
-          differenceInSeconds(new Date(), activeCycle.startDate),
+        const secondsDifference = differenceInSeconds(
+          new Date(),
+          activeCycle.startDate,
+        )
+
+        if (secondsDifference <= totalSeconds) {
+          setAmountSecondsPassed(secondsDifference)
+          return
+        }
+
+        setCycles((state) =>
+          state.map((state) => {
+            if (state.id === activeCycleId) {
+              return { ...state, finishedDate: new Date() }
+            }
+
+            return state
+          }),
         )
       })
     }
@@ -89,9 +109,8 @@ export default function Home() {
     return () => {
       clearInterval(interval)
     }
-  }, [activeCycle])
+  }, [activeCycle, activeCycleId, totalSeconds])
 
-  const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0
   const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0
 
   const minutesAmount = Math.floor(currentSeconds / 60)
