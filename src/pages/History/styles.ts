@@ -29,10 +29,14 @@ export const HistoryList = styled.div`
       font-size: 0.875rem;
       line-height: 1.6;
 
-      &:first-child,
-      &:last-child {
+      &:first-child {
         border-top-left-radius: 8px;
         padding-right: 1.5rem;
+      }
+
+      &:last-child {
+        border-top-right-radius: 8px;
+        padding-left: 1.5rem;
       }
     }
 
