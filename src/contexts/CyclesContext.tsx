@@ -1,7 +1,8 @@
 import { differenceInSeconds } from 'date-fns/esm'
-import { createContext, ReactNode, useReducer, useState } from 'react'
+import { createContext, ReactNode, useEffect, useReducer, useState } from 'react'
 import { addNewCycleAction, interruptCurrentCycleAction, markCurrentCycleAsFinishedAction } from '../reducers/cycles/actions'
 import { Cycle, cyclesReducer } from '../reducers/cycles/reducer'
+import { getCycles, saveCycles } from '../utils/cyclesStorage'
 
 interface CreateCycleData {
   task: string
@@ -29,7 +30,7 @@ export const CyclesContextProvider = ({ children }: Props) => {
   const [cyclesState, dispatch] = useReducer(cyclesReducer, {
     cycles: [],
     activeCycleId: null,
-  },)
+  }, () => getCycles())
 
   const { cycles, activeCycleId } = cyclesState
   const activeCycle = cycles.find(({ id }) => activeCycleId === id)
@@ -65,6 +66,10 @@ export const CyclesContextProvider = ({ children }: Props) => {
   const setSecondsPassed = (seconds: number) => {
     setAmountSecondsPassed(seconds)
   }
+
+  useEffect(() => {
+    saveCycles(cyclesState.cycles, cyclesState.activeCycleId)
+  }, [cyclesState])
 
   return (
     <CyclesContext.Provider
